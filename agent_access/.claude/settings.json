@@ -1,4 +1,5 @@
 {
+  "includeGitInstructions": false,
   "permissions": {
     "deny": [
       "Read(//Users/anfries/polybox/fluxnet/ERA/code_evaluation/**)",
