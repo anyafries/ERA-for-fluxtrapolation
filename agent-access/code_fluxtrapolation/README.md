@@ -5,8 +5,8 @@ Predict hourly evapotranspiration (ET) at eddy-covariance sites the model has ne
 ## Setup
 
 ```bash
-python -m venv venv_fn
-source venv_fn/bin/activate
+python -m venv venv_flux_era
+source venv_flux_era/bin/activate
 pip install -r requirements.txt
 ```
 
@@ -90,11 +90,11 @@ class Model:
     def __init__(self, alpha=1.0):
         self.alpha = alpha
 
-    def fit(self, X, y, eval_set=None, envs=None, feature_names=None):
+    def fit(self, X, y, eval_set=None, envs=None, times=None, feature_names=None):
         ...
         return self
 
-    def predict(self, X):
+    def predict(self, X, envs=None, times=None):
         ...  # np.ndarray of shape (n,)
 
 
@@ -107,7 +107,9 @@ PARAM_SPACE = {
 - `fit` must take `X` and `y`. The other arguments are optional. They are passed only if `fit` has them:
   - `eval_set`: `[(X_val, y_val)]` with the measured val hours, for early stopping.
   - `envs`: site id of each train row.
+  - `times`: `np.datetime64` timestamp of each train row.
   - `feature_names`: list of feature names.
+- `predict` must take `X`. It also gets `envs` and `times` of the val rows (no labels), only if it has them.
 - `PARAM_SPACE` maps each `__init__` argument to:
   - a fixed value, or
   - `('uniform', lo, hi)`, `('loguniform', lo, hi)`, `('int', lo, hi)` (inclusive), or `('choice', [options])`.

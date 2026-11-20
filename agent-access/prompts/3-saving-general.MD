@@ -14,12 +14,12 @@ Companion documents:
 
 ## 2. Folder layout
 
-In `agent-access`, you have a `SCRATCH`. Progress, models, in-search evaluation and any other relevant information you want to collect during the tree search should be saved here. 
+In `agent-access`, you have a `scratch/` folder. Progress, models, in-search evaluation and any other relevant information you want to collect during the tree search should be saved here. 
 
-A run is one launch of a tree with a specific research direction. Before anything else, create `SCRATCH/{RUN_ID}/` (e.g. `run_YYYYMMDD_HHMM`), and before a tree's first node, create `SCRATCH/{RUN_ID}/{TREE_ID}/` (`TREE_ID` = the research-direction filename without `.md`). Pass `RUN_ID` and `TREE_ID` to every in-search evaluation ([5-in-search-eval.MD](5-in-search-eval.MD)).
+A run is one launch of a tree with a specific research direction. Before anything else, create `scratch/{RUN_ID}/` (e.g. `run_YYYYMMDD_HHMM`), and before a tree's first node, create `scratch/{RUN_ID}/{TREE_ID}/` (`TREE_ID` = the research-direction filename without `.md`). Pass `RUN_ID` and `TREE_ID` to every in-search evaluation ([5-in-search-eval.MD](5-in-search-eval.MD)).
 
 ```
-SCRATCH/{RUN_ID}/
+scratch/{RUN_ID}/
   ...                    # run-level files
   {TREE_ID}/
     {node}/              # one folder per node (written by the evaluator)

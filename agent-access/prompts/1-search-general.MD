@@ -2,7 +2,7 @@
 
 ## 1. Goal
 
-Our general task is solve a problem as specified in `4-task-description.MD`. Instead of creating programs yourself, your job is to spawn tree searches over programs using sub-agents and deliver a shortlist suitable for evaluation on an unseen final test set.
+Our general task is to solve a problem as specified in `4-task-description.MD`. Instead of creating programs yourself, your job is to spawn tree searches over programs using sub-agents and deliver a shortlist suitable for evaluation on an unseen final test set.
 
 Companion documents:
 

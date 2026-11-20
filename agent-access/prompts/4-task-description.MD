@@ -73,7 +73,7 @@ Optional class attributes on `Model`:
 
 ## Code base
 
-You are writing a file for the `models/` folder of code_fluxtrapolation_training. You may import the following (skeletons only).
+You are writing a file for the `models/` folder of `code_fluxtrapolation/`. You may import the following (skeletons only).
 
 Dataloaders for torch models:
 
@@ -122,7 +122,7 @@ The harness draws **5 configurations** from `PARAM_SPACE` with a fixed seed (42)
 You must output a python file which must define:
 
 ```python
-"""Model name/short desription"""
+"""Model name/short description"""
 
 import libraries
 from library import module

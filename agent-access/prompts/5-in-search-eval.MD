@@ -11,7 +11,7 @@ Your job is to put the file received into the scratch code base, run the harness
 
 ## Layout
 
-Run every command from `code_fluxtrapolation_training/` with the project venv active. You will use the following paths below, given relative to it.
+Run every command from `code_fluxtrapolation/` with the project venv active. You will use the following paths below, given relative to it.
 
 ```
 ../scratch/{RUN_ID}/
@@ -24,7 +24,7 @@ Run every command from `code_fluxtrapolation_training/` with the project venv ac
       {MODEL_NAME}_val_predictions.csv
 ```
 
-Do not write anything inside `code_fluxtrapolation_training/`. Nodes are moved into the main repo only after the search is done, and not by you.
+Do not write anything inside `code_fluxtrapolation/`. Nodes are moved into the main repo only after the search is done, and not by you.
 
 Evaluate one node at a time, because the 30-minute limit assumes the machine is otherwise idle.
 
