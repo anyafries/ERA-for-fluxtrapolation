@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(//Users/anfries/polybox/fluxnet/ERA/code_evaluation/**)",
+      "Read(//Users/anfries/polybox/fluxnet/code/**)",
+      "Read(//Users/anfries/polybox/fluxnet/overleaf/**)",
+      "Read(//Users/anfries/polybox/fluxnet/leaderboard/**)",
+      "Read(//Users/anfries/polybox/fluxnet/meetings/**)",
+      "Read(//Users/anfries/polybox/fluxnet/neurips_submissions/**)",
+      "Read(//Users/anfries/polybox/fluxnet/plots/**)",
+      "Read(//Users/anfries/polybox/fluxnet/posters/**)",
+      "Read(//Users/anfries/polybox/fluxnet/results/**)",
+      "Read(//Users/anfries/polybox/fluxnet/results1/**)",
+      "Read(//Users/anfries/Documents/fluxnet_bench/**)",
+      "Read(~/.ssh/**)",
+      "Edit(.claude/**)"
+    ]
+  },
+  "sandbox": {
+    "enabled": true,
+    "filesystem": {
+      "denyRead": ["~/"],
+      "allowRead": [
+        "/Users/anfries/polybox/fluxnet/ERA/agent-access/code_fluxtrapolation",
+        "/Users/anfries/polybox/fluxnet/ERA/agent-access/scratch",
+        "/Users/anfries/polybox/fluxnet/ERA/agent-access/prompts"
+      ],
+      "allowWrite": ["/Users/anfries/polybox/fluxnet/ERA/agent-access/scratch"]
+    }
+  }
+}
