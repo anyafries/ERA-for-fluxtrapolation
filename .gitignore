@@ -1,0 +1,9 @@
+.DS_Store
+__pycache__/
+**/.claude/.cc-writes/
+**/.claude/settings.local.json
+agent-access/scratch/
+agent-access/code_fluxtrapolation/data/
+agent-access/code_fluxtrapolation/results/
+agent-access/code_fluxtrapolation/venv_flux_era/
+code_evaluation/data/
