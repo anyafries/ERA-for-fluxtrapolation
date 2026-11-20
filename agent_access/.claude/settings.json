@@ -21,11 +21,11 @@
     "filesystem": {
       "denyRead": ["~/"],
       "allowRead": [
-        "/Users/anfries/polybox/fluxnet/ERA/agent-access/code_fluxtrapolation",
-        "/Users/anfries/polybox/fluxnet/ERA/agent-access/scratch",
-        "/Users/anfries/polybox/fluxnet/ERA/agent-access/prompts"
+        "/Users/anfries/polybox/fluxnet/ERA/agent_access/code_fluxtrapolation",
+        "/Users/anfries/polybox/fluxnet/ERA/agent_access/scratch",
+        "/Users/anfries/polybox/fluxnet/ERA/agent_access/prompts"
       ],
-      "allowWrite": ["/Users/anfries/polybox/fluxnet/ERA/agent-access/scratch"]
+      "allowWrite": ["/Users/anfries/polybox/fluxnet/ERA/agent_access/scratch"]
     }
   }
 }
