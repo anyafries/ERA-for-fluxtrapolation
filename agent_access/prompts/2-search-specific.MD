@@ -1,4 +1,4 @@
-# Run config (v0.1)
+# Run config (v0.2)
 
 ## Trees
 - 1 tree for each MD file in `prompts/research_directions`
@@ -7,9 +7,9 @@
 - c = 1.5.
 
 ## Budgets
-- Attempts per tree: 4 
+- Attempts per tree: 12 
 - Per evaluation (i.e., fitting the model, making predictions, and scoring them): 30 min timeout. Memory: not enforced, log it if measurable.
-- Total cap: 2 h of evaluation wall-clock. Don't start a new evaluation with < 30 min left.
+- Total cap: 20 h of evaluation wall-clock. Don't start a new evaluation with < 30 min left.
 - Concurrency: 1 worker, 1 evaluation at a time.
 - If Claude usage limits reach >80% pause, notify, and ask if you should continue or stop the search.
 
