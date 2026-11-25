@@ -1,11 +1,11 @@
-# Evaluate one candidate node (v0.1)
+# Evaluate one candidate node (v0.2)
 
 Your job is to put the file received into the scratch code base, run the harness and record the score. 
 **Do not improve, debug or rewrite the model.** If it crashes, that is its result. **Only read-only git commands (e.g. `git diff`) are allowed; never run any other git command.**
 
 ## Inputs
 
-- `RUN_ID`, `TREE_ID`: given by the search agent. The search agent creates `agent-access/scratch/{RUN_ID}/{TREE_ID}/` before the first node of a tree. If that folder is missing, stop and ask.
+- `RUN_ID`, `TREE_ID`: given by the search agent. The search agent creates `agent_access/scratch/{RUN_ID}/{TREE_ID}/` before the first node of a tree. If that folder is missing, stop and ask.
 - `PARENT`, `DIRECTION`: given by the search agent (`empty` for root children or if there is no direction).
 - The python file containing the model.
 
@@ -24,7 +24,7 @@ Run every command from `code_fluxtrapolation/` with the project venv active. You
       {MODEL_NAME}_val_predictions.csv
 ```
 
-Do not write anything inside `code_fluxtrapolation/`. Nodes are moved into the main repo only after the search is done, and not by you.
+Write candidate artefacts only to the node folder. The coordinator exports finalists after the search, as described in `3-saving-general.MD`.
 
 Evaluate one node at a time, because the 30-minute limit assumes the machine is otherwise idle.
 

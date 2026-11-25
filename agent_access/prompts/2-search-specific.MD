@@ -1,4 +1,4 @@
-# Run config (v0.2)
+# Run config (v0.3)
 
 ## Trees
 - 1 tree for each MD file in `prompts/research_directions`
@@ -16,3 +16,6 @@
 ## Shortlist
 - Max 3 finalists per tree, ranked by the primary metric given in `4-task-description.MD`.
 - Eligible: status `ok`.
+
+## Retention
+- `artifact_retention = all` keeps all candidate files. Set to `compact` to keep candidate source and run-level summaries only and remove per-node evaluation files after finalising the run (takes less disk space).

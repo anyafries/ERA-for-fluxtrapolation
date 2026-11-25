@@ -93,6 +93,7 @@ Save partial results and the stop reason.
 - Before the first dispatch, record the numbered prompt versions as specified in `3-saving-general.MD`.
 - Save state after every dispatch and every finished evaluation.
 - On resume, use the recorded numbered prompt versions and resolve pending work before dispatching new work.
+- When the run is complete, export the finalists, save the summaries and apply the retention setting as specified in `3-saving-general.MD`.
 - Record: task config, evaluator version, code hashes, environment, provider/model (when known), all evaluation results.
 - Goal: saved code can be re-evaluated reproducibly.
 - See `3-saving-general.MD` for more detailed instructions.
