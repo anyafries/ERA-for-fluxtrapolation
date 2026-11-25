@@ -1,4 +1,4 @@
-# Search protocol (v0.1)
+# Search protocol (v0.2)
 
 ## 1. Goal
 
@@ -90,8 +90,9 @@ Save partial results and the stop reason.
 - A venv doesn't isolate data or processes. Set up access limits and resource controls separately.
 
 ## 10. Saving and portability
+- Before the first dispatch, record the numbered prompt versions as specified in `3-saving-general.MD`.
 - Save state after every dispatch and every finished evaluation.
-- On resume, resolve pending work before dispatching new work.
-- Record: protocol version, task config, evaluator version, code hashes, environment, prompts, provider/model (when known), all evaluation results.
+- On resume, use the recorded numbered prompt versions and resolve pending work before dispatching new work.
+- Record: task config, evaluator version, code hashes, environment, provider/model (when known), all evaluation results.
 - Goal: saved code can be re-evaluated reproducibly.
 - See `3-saving-general.MD` for more detailed instructions.

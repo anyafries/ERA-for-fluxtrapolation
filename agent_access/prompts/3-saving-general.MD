@@ -1,4 +1,4 @@
-# Artifacts and reporting (v0.1)
+# Artifacts and reporting (v0.2)
 
 ## 1. Goal
 - Every run can be inspected and resumed.
@@ -20,13 +20,14 @@ A run is one launch of a tree with a specific research direction. Before anythin
 
 ```
 scratch/{RUN_ID}/
+  run_manifest.json
   ...                    # run-level files
   {TREE_ID}/
     {node}/              # one folder per node (written by the evaluator)
 ```
 
 The run folder holds:
-- Run manifest and the completed task spec.
+- Run manifest and any run-specific additions to the task spec.
 - Append-only event log and resumable scheduler state.
 - Finalist manifest and descriptions.
 - Tree visualization and summary report.
@@ -36,7 +37,7 @@ The run folder holds:
 
 **Per run**
 - Run ID and timestamps.
-- Protocol and task-spec versions.
+- In `run_manifest.json`, record `prompt_versions` as a mapping from each numbered prompt filename to the version in its first heading (e.g. `"2-search-specific.MD": "v0.2"`).
 - Environment.
 - Provider/model, when known.
 - Tree order and each tree's research direction (source filename).
