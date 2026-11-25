@@ -4,27 +4,31 @@ ERA's train/val split is TA40's train/val split, so a node's best config only
 needs to be refit and asked to predict on the TA40 test sites.
 
 For each node:
-  1. Take the best config (highest val skill) from
-     code_fluxtrapolation_training/results/{node}_trials.csv.
+  1. Load the model and its best validation config from the finalist export
+     or the training checkout's models/ and results/ directories.
   2. Refit it on the train sites, exactly as train_model.py does.
   3. Predict on val (reproducibility check) and on the 40 test sites.
   4. Score with eval.evaluate on all test hours, relative to lr refit
      on the same test sites.
 
 Usage:
+    python evaluate_test.py --finalists /path/to/run/finalists
     python evaluate_test.py                 # best ERA node (top 1 in era_nodes.csv)
     python evaluate_test.py --topk 5        # 5 best ERA nodes
     python evaluate_test.py --node xgb      # one model, e.g. a baseline
 
-Nothing in code_fluxtrapolation_training is changed; it is only imported.
+Finalist test results are saved under code_evaluation/results/{run_id}/.
 """
 
 import argparse
+import hashlib
 import json
 import logging
+import math
 import os
 import sys
 import time
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -33,6 +37,8 @@ from sklearn.preprocessing import RobustScaler
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TRAIN_REPO = os.path.join(HERE, '..', 'code_fluxtrapolation_training')
+if not os.path.isdir(TRAIN_REPO):
+    TRAIN_REPO = os.path.join(HERE, '..', 'agent_access', 'code_fluxtrapolation')
 sys.path.insert(0, TRAIN_REPO)
 
 from dataloader import load_data, NON_FEATURES, TARGET  # noqa: E402
@@ -100,11 +106,36 @@ def best_params(node):
     return json.loads(best['params']), float(best['skill'])
 
 
-def run_node(node, train_path, test_path, base_val, base_test):
+def load_finalists(directory):
+    """Read the exported configuration and verify each frozen model file."""
+    directory = Path(directory)
+    with (directory / 'manifest.json').open(encoding='utf-8') as handle:
+        manifest = json.load(handle)
+    run_id = manifest['run_id']
+    if not isinstance(run_id, str) or run_id in ('', '.', '..') or Path(run_id).name != run_id:
+        raise ValueError(f"Invalid finalist run ID: {run_id!r}")
+
+    finalists = {}
+    for entry in manifest['finalists']:
+        node = entry['node']
+        if not isinstance(node, str) or not node.isidentifier() or node == 'lr' or node in finalists:
+            raise ValueError(f"Invalid or duplicate finalist name: {node!r}")
+        model_file = directory / f'{node}.py'
+        if hashlib.sha256(model_file.read_bytes()).hexdigest() != entry['sha256']:
+            raise ValueError(f"Source hash mismatch for finalist {model_file}")
+        params, skill = entry['params'], entry['validation_metrics']['skill']
+        if not isinstance(params, dict) or type(skill) not in (int, float) or not math.isfinite(skill):
+            raise ValueError(f"Invalid params or validation skill for finalist {node}")
+        finalists[node] = {'model_file': model_file, 'params': params, 'val_skill': skill}
+    return run_id, finalists
+
+
+def run_node(node, train_path, test_path, base_val, base_test, *, model_file=None, params=None, val_skill=None):
     """Refit the node's best config, predict val and test. Returns (row, test predictions)."""
     t0 = time.time()
-    mod = load(node)
-    params, val_skill = best_params(node)
+    mod = load(node) if model_file is None else load(f'models.{node}', model_file)
+    if params is None:
+        params, val_skill = best_params(node)
     logger.info(f"[{node}] params={params}")
 
     (xtr, ytr, etr, ttr), (xva, yva, eva, tva, qva), features = prepare(mod, train_path)
@@ -152,8 +183,10 @@ def topk_nodes(k):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--node", default=None, help="Model name in models/ (overrides --topk)")
-    parser.add_argument("--topk", type=int, default=1, help="Evaluate the k best ok nodes in era_nodes.csv")
+    parser.add_argument("--finalists", type=Path, help="Evaluate a run's exported finalists/ directory")
+    parser.add_argument("--node", help="Evaluate one model by name (overrides --topk)")
+    parser.add_argument("--topk", type=int,
+                        help="Limit evaluation to the k best nodes (default: all exported finalists or one legacy node)")
     parser.add_argument("--train_path", default=os.path.join(TRAIN_REPO, 'data', 'sites'),
                         help="ERA data folder (train + val sites)")
     parser.add_argument("--test_path", default=DEFAULT_TEST_PATH,
@@ -161,15 +194,35 @@ if __name__ == "__main__":
     parser.add_argument("--rerun", action='store_true', help="Overwrite existing results")
     args = parser.parse_args()
 
-    os.makedirs(os.path.join(HERE, 'results'), exist_ok=True)
-    scores_path = os.path.join(HERE, 'results', 'test_scores.csv')
+    if args.topk is not None and args.topk < 1:
+        parser.error('--topk must be positive')
+
+    results_dir = os.path.join(HERE, 'results')
+    finalists = {}
+    if args.finalists is not None:
+        run_id, finalists = load_finalists(args.finalists)
+        if not finalists:
+            parser.error(f'No finalists in {args.finalists}')
+        if args.node and args.node not in finalists:
+            parser.error(f'{args.node!r} is not in {args.finalists}')
+        results_dir = os.path.join(results_dir, run_id)
+        nodes = list(finalists)
+        if args.topk is not None:
+            nodes = sorted(nodes, key=lambda node: finalists[node]['val_skill'], reverse=True)[:args.topk]
+    else:
+        nodes = [] if args.node else topk_nodes(args.topk or 1)
+    if args.node:
+        nodes = [args.node]
+
+    os.makedirs(results_dir, exist_ok=True)
+    scores_path = os.path.join(results_dir, 'test_scores.csv')
     done = pd.read_csv(scores_path) if os.path.exists(scores_path) else pd.DataFrame(columns=['node'])
 
     def save(row, preds):
         global done
         done = pd.concat([done[done['node'] != row['node']], pd.DataFrame([row])], ignore_index=True)
         done.sort_values('skill', ascending=False).to_csv(scores_path, index=False)
-        preds.to_csv(os.path.join(HERE, 'results', f"{row['node']}_test_predictions.csv"), index=False)
+        preds.to_csv(os.path.join(results_dir, f"{row['node']}_test_predictions.csv"), index=False)
 
     # lr is the skill reference on the test sites; its val reference is lr_trials.csv.
     base_val = pd.read_csv(os.path.join(TRAIN_REPO, 'results', 'lr_trials.csv')).iloc[0]
@@ -177,14 +230,13 @@ if __name__ == "__main__":
         save(*run_node('lr', args.train_path, args.test_path, None, None))
     base_test = done.set_index('node').loc['lr']
 
-    nodes = [args.node] if args.node else topk_nodes(args.topk)
     for node in nodes:
         if node == 'lr':
             continue
         if node in set(done['node']) and not args.rerun:
             logger.info(f"[{node}] already in {scores_path}. Use --rerun to overwrite.")
             continue
-        save(*run_node(node, args.train_path, args.test_path, base_val, base_test))
+        save(*run_node(node, args.train_path, args.test_path, base_val, base_test, **finalists.get(node, {})))
 
     cols = ['node', 'skill', 'skill_q90', 'val_skill', 'val_skill_refit', 'minutes']
     print(done.sort_values('skill', ascending=False)[cols].to_string(index=False))
