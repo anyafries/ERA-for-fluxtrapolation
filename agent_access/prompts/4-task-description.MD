@@ -1,4 +1,4 @@
-# Task description (v0.1)
+# Task description (v0.2)
 ## Overview
 
 We want to predict hourly **evapotranspiration (ET)** at places where nothing has been measured.
@@ -162,7 +162,7 @@ PARAM_SPACE = {
 1. For each of the 5 hyperparameter draws, the harness calls `Model(**params).fit(...)` on the training sites and then `predict` on the 20 validation sites.
 2. The best draw is selected by the validation score below. Your node's fitness is that draw's validation score. **Higher is better.**
 
-**Validation score: skill relative to linear regression, averaged over six temporal scales.**
+**Primary validation metric: `skill`, relative to linear regression and averaged over six temporal scales. Higher is better.**
 - Hourly predictions are aggregated per site to six scales:
   - **hourly**
   - **weekly** means
@@ -173,7 +173,8 @@ PARAM_SPACE = {
 - For each scale c, let E_c be the **median over validation sites** of the per-site RMSE.
 - Let E_c⁰ be the same quantity for an ordinary linear regression on the 26 raw covariates, trained on the same training rows.
 - Score = (1/6) Σ_c (1 − E_c / E_c⁰). A score of 0 equals linear regression; 1 is perfect; negative is worse than linear regression.
-- For reference, current baselines score: linear regression 0 (by definition); XGBoost (`xgb`) 0.265 (q90 score: 0.195).
+
+**Reporting:** Show `skill_q90` as a second metric view. It uses the 90th percentile over sites in place of the median. Higher is better for both skill metrics. Use XGBoost (`xgb`) as the reporting reference wherever matching validation scores are available. Reference scores are `skill = 0.265` and `skill_q90 = 0.195`. Show per-scale RMSEs in the node details. Lower is better for RMSE.
 
 **Compute limits:**
 - The **whole run** (loading the data, 5 fits and predictions) must finish within **30 minutes** on a MacBook Pro M3 (Apple-silicon GPU via `torch` MPS). Otherwise the node fails. Loading counts toward the limit, and with `remove_missing_target = False` there are 5.5 million training rows.

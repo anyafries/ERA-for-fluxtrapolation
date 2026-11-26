@@ -1,4 +1,4 @@
-# Search protocol (v0.2)
+# Search protocol (v0.3)
 
 ## 1. Goal
 
@@ -19,7 +19,7 @@ Companion documents:
 - Workers are temporary; nodes are saved artifacts, so no agent needs to keep running.
 
 ## 3. The task spec 
-Ensure that the task spec (`4-task-description.MD`) defines:
+Check the items below across `2-search-specific.MD` (run settings), `4-task-description.MD` (task, interface and metric), `5-in-search-eval.MD` (evaluation procedure) and the research-direction files (starting methods).
 - Inputs, outputs and allowed information.
 - Code interface and formatting.
 - Primary metric, its direction and how it is aggregated.
